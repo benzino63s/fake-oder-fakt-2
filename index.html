@@ -3,31 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <title>Fake oder Fakt?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { font-family: Arial, sans-serif; background: #e3f2fd; display: flex; flex-direction: column; align-items: center; padding: 20px; position: relative; }
+  body { font-family: Arial, sans-serif; background: #e3f2fd; display: flex; flex-direction: column; align-items: center; padding: 20px; margin:0; }
 
-  h1 { color: #0d47a1; margin-bottom: 30px; }
+  h1 { color: #0d47a1; margin-bottom: 2rem; font-size: 2.5rem; text-align:center; }
 
   /* Очки сверху справа */
-  #scoreDisplay { position: fixed; top: 10px; right: 20px; font-size: 20px; font-weight: bold; color: #0d47a1; }
+  #scoreDisplay { position: fixed; top: 10px; right: 20px; font-size: 1.5rem; font-weight: bold; color: #0d47a1; }
 
   /* Стартовое меню */
   #startMenu { text-align:center; margin-top:50px; }
-  #startMenu button { padding:15px 30px; font-size:18px; border:none; border-radius:10px; background-color:#007bff; color:white; cursor:pointer; transition:0.2s; }
+  #startMenu button { padding:1rem 2rem; font-size:1.2rem; border:none; border-radius:10px; background-color:#007bff; color:white; cursor:pointer; transition:0.2s; }
   #startMenu button:hover { background-color:#0056b3; transform: scale(1.05); }
 
   /* Новости */
-  .news-box { background: white; padding: 40px 20px; border-radius: 15px; margin: 20px; max-width: 700px; width: 90%; box-shadow: 0 6px 12px rgba(0,0,0,0.25); display:flex; flex-direction:column; align-items:center; min-height:300px; }
-  #newsText { font-size:26px; text-align:center; margin-bottom:20px; border:2px solid #0d47a1; padding:20px; border-radius:10px; width:100%; }
+  .news-box { background: white; padding: 2rem 1rem; border-radius: 15px; margin: 1rem; max-width: 700px; width: 90%; box-shadow: 0 6px 12px rgba(0,0,0,0.25); display:flex; flex-direction:column; align-items:center; min-height:300px; }
+  #newsText { font-size: 2rem; text-align:center; margin-bottom:1rem; border:2px solid #0d47a1; padding:1rem; border-radius:10px; width:100%; word-wrap:break-word; }
 
-  img { max-width: 100%; border-radius: 10px; margin-bottom: 20px; }
+  img { max-width: 100%; border-radius: 10px; margin-bottom: 1rem; }
 
-  button.choice { margin: 5px; padding: 15px 25px; font-size: 18px; border-radius: 8px; cursor: pointer; background-color:#e0e0e0; transition:0.2s; }
+  button.choice { margin: 0.5rem; padding: 0.8rem 1.5rem; font-size:1.2rem; border-radius: 8px; cursor: pointer; background-color:#e0e0e0; transition:0.2s; }
   button.choice:hover { transform: scale(1.05); }
 
-  .result { margin-top: 20px; font-weight: bold; font-size:18px; text-align:center; }
+  .result { margin-top: 1rem; font-weight: bold; font-size:1rem; text-align:center; }
 
-  .timer { font-size: 20px; color: #0d47a1; font-weight: bold; margin-bottom: 5px; }
+  .timer { font-size: 1.2rem; color: #0d47a1; font-weight: bold; margin-bottom: 0.5rem; }
 
   /* Прогресс-бар */
   #progressContainer { width:90%; max-width:700px; height:20px; background:#cfd8dc; border-radius:10px; overflow:hidden; margin-bottom:20px; }
@@ -37,27 +38,36 @@
   #gameOver { 
     display:none; 
     text-align:center; 
-    padding:20px; 
+    padding:2rem; 
     border-radius:12px; 
     background-color:#f0f8ff; 
     box-shadow:0 4px 12px rgba(0,0,0,0.2); 
     max-width:500px; 
-    margin:50px auto; 
+    margin:3rem auto; 
     font-family:sans-serif; 
     opacity: 0;
     transform: scale(0.8);
     transition: all 0.5s ease;
   }
   #gameOver.show { opacity:1; transform: scale(1); }
-  #gameOverTitle { font-size:28px; margin-bottom:10px; }
-  #gameOverMessage { font-size:18px; margin-bottom:15px; }
-  #gameOverScore { font-size:22px; font-weight:bold; }
-  #gameOver button { padding:10px 20px; font-size:16px; border:none; border-radius:8px; background-color:#007bff; color:white; cursor:pointer; transition:0.2s; }
+  #gameOverTitle { font-size:2rem; margin-bottom:1rem; }
+  #gameOverMessage { font-size:1.2rem; margin-bottom:1rem; }
+  #gameOverScore { font-size:1.5rem; font-weight:bold; }
+  #gameOver button { padding:0.8rem 1.5rem; font-size:1rem; border:none; border-radius:8px; background-color:#007bff; color:white; cursor:pointer; transition:0.2s; }
   #gameOver button:hover { background-color:#0056b3; transform: scale(1.05); }
 
   /* Цвет кнопок */
   .correct { background-color:#4CAF50 !important; color:white; }
   .wrong { background-color:#F44336 !important; color:white; }
+
+  /* Адаптация для телефонов */
+  @media (max-width:600px){
+    h1 { font-size:2rem; }
+    #newsText { font-size:1.5rem; }
+    button.choice { font-size:1rem; padding:0.5rem 1rem; }
+    #scoreDisplay { font-size:1.2rem; }
+    .timer { font-size:1rem; }
+  }
 </style>
 </head>
 <body>
@@ -119,7 +129,6 @@ let score = 0;
 let timeLeft = 30;
 let timerInterval;
 
-// Перемешивание вопросов
 function shuffle(array) {
   for (let i = array.length -1; i>0; i--) {
     const j = Math.floor(Math.random()*(i+1));

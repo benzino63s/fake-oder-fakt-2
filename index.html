@@ -60,7 +60,7 @@
 <div id="scoreDisplay">Punkte: 0</div>
 
 <div id="startMenu">
-  <button onclick="startGame()">Spiel starten</button>
+  <button id="startButton">Spiel starten</button>
 </div>
 
 <div class="timer" id="timer" style="display:none;">20</div>
@@ -99,12 +99,14 @@ const newsList = [
   {text:"Statistisches Bundesamt: Geburtenrate sinkt seit 2015", answer:"Fakt", explanation:"Das stimmt laut Destatis.", img:"https://upload.wikimedia.org/wikipedia/commons/2/28/Destatis_Logo.svg"},
   {text:"Schokolade heilt Krebs in 7 Tagen", answer:"Fake", explanation:"Das ist eine Falschmeldung, es gibt keine solche Studie.", img:"images/schokolade.jpg"},
   {text:"UN-Bericht: Globale CO₂-Emissionen steigen weiterhin", answer:"Fakt", explanation:"Richtig. Quelle: https://www.unep.org/resources/emissions-gap-report-2023", img:"https://upload.wikimedia.org/wikipedia/commons/0/05/United_Nations_logo.svg"}
-  // добавьте другие новости по аналогии
+  // можно добавить ещё новости
 ];
 
 let current=0, score=0, timeLeft=20, timerInterval;
 
 function shuffle(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]];}}
+
+document.getElementById('startButton').addEventListener('click', startGame);
 
 function startGame(){
   document.getElementById('startMenu').style.display='none';
@@ -114,7 +116,8 @@ function startGame(){
   document.getElementById('progressContainer').style.display='block';
   document.getElementById('questionCount').style.display='block';
   shuffle(newsList);
-  current=0; score=0;
+  current = 0;
+  score = 0;
   document.getElementById('scoreDisplay').innerText="Punkte: 0";
   showNews();
 }
@@ -142,5 +145,58 @@ function showNews(){
   timerInterval=setInterval(()=>{
     timeLeft--; document.getElementById('timer').innerHTML=timeLeft;
     document.getElementById('progressBar').style.width=(timeLeft/20*100)+"%";
-    if(timeLeft<=0){ clearInterval(timerInterval); document.getElementById('result').style.display='bloc
+    if(timeLeft<=0){ clearInterval(timerInterval); document.getElementById('result').style.display='block'; document.getElementById('result').innerHTML="Zeit vorbei! ❌ "+newsList[current].explanation; current++; setTimeout(showNews,2000);}
+  },1000);
+}
 
+function choose(option, button){
+  clearInterval(timerInterval);
+  let correct=newsList[current].answer;
+  let explanation=newsList[current].explanation;
+  document.getElementById('result').style.display='block';
+
+  if(option===correct){
+    score+=1;
+    document.getElementById('result').innerHTML="Richtig! ✅ "+explanation;
+    document.getElementById('correctSound').play();
+  } else {
+    document.getElementById('result').innerHTML="Falsch! ❌ "+explanation;
+    document.getElementById('wrongSound').play();
+  }
+
+  document.getElementById('scoreDisplay').innerText="Punkte: "+score;
+  document.querySelectorAll(".choice").forEach(btn=>{btn.disabled=true; if(btn.textContent===correct) btn.classList.add("correct");});
+  if(option!==correct && option!=="Unsicher") button.classList.add("wrong");
+
+  current++; setTimeout(showNews,2000);
+}
+
+function showGameOver(score){
+  document.getElementById('news').style.display='none';
+  document.getElementById('choices').style.display='none';
+  document.getElementById('timer').style.display='none';
+  document.getElementById('progressContainer').style.display='none';
+  document.getElementById('result').style.display='none';
+  document.getElementById('questionCount').style.display='none';
+
+  const gameOver=document.getElementById('gameOver');
+  const title=document.getElementById('gameOverTitle');
+  const message=document.getElementById('gameOverMessage');
+  const scoreText=document.getElementById('gameOverScore');
+
+  gameOver.style.display='block'; gameOver.classList.remove('show');
+
+  if(score>=Math.ceil(newsList.length/2)){
+    title.innerText="🎉 Du hast gewonnen!"; message.innerText="Glückwunsch! Du hast mehr als die Hälfte der Punkte erreicht.";
+  } else {
+    title.innerText="😞 Du hast verloren!"; message.innerText="Leider hast du weniger als die Hälfte der Punkte erreicht.";
+  }
+
+  scoreText.innerText="Punkte: "+score;
+  setTimeout(()=>{ gameOver.classList.add('show'); },50);
+}
+
+function restartGame(){ document.getElementById('gameOver').classList.remove('show'); document.getElementById('gameOver').style.display='none'; startGame();}
+</script>
+</body>
+</html>

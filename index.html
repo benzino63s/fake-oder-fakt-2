@@ -13,12 +13,33 @@
   .timer { font-size: 18px; color: #0d47a1; font-weight: bold; margin-bottom: 10px; }
 
   /* Конец игры */
-  #gameOver { display:none; text-align:center; padding:20px; border-radius:12px; background-color:#f0f8ff; box-shadow:0 4px 12px rgba(0,0,0,0.2); max-width:500px; margin:50px auto; font-family:sans-serif; }
+  #gameOver { 
+    display:none; 
+    text-align:center; 
+    padding:20px; 
+    border-radius:12px; 
+    background-color:#f0f8ff; 
+    box-shadow:0 4px 12px rgba(0,0,0,0.2); 
+    max-width:500px; 
+    margin:50px auto; 
+    font-family:sans-serif; 
+
+    /* для анимации */
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.5s ease;
+  }
+
+  #gameOver.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
   #gameOverTitle { font-size:28px; margin-bottom:10px; }
   #gameOverMessage { font-size:18px; margin-bottom:15px; }
   #gameOverScore { font-size:22px; font-weight:bold; }
   #gameOver button { padding:10px 20px; font-size:16px; border:none; border-radius:8px; background-color:#007bff; color:white; cursor:pointer; transition:0.2s; }
-  #gameOver button:hover { background-color:#0056b3; }
+  #gameOver button:hover { background-color:#0056b3; transform: scale(1.05); }
 </style>
 </head>
 <body>
@@ -50,7 +71,7 @@
 
 <script>
 const newsList = [
-  {text: "Bundesregierung beschließt neues Klimaschutzgesetz", answer: "Fakt", explanation: "Die Bundesregierung hat das neue Gesetz offiziell beschlossen.", img: "images/Bundeskanzleramt.jpg"},
+  {text: "Bundesregierung beschließt neues Klimaschutzgesetz", answer: "Fakt", explanation: "Die Bundesregierung hat das neue Gesetz offiziell beschlossen.", img: "images/bundeskanzleramt.jpg"},
   {text: "Neue Impfung schützt vor allen Viren", answer: "Fake", explanation: "Das ist falsch. Impfungen schützen nur vor bestimmten Viren, nicht vor allen.", img: "https://upload.wikimedia.org/wikipedia/commons/1/12/Vaccine.jpg"},
   {text: "Statistisches Bundesamt: Geburtenrate sinkt seit 2015", answer: "Fakt", explanation: "Das stimmt laut Destatis.", img: "https://upload.wikimedia.org/wikipedia/commons/2/28/Destatis_Logo.svg"},
   {text: "Schokolade heilt Krebs in 7 Tagen", answer: "Fake", explanation: "Das ist eine Falschmeldung, es gibt keine solche Studie.", img: "https://upload.wikimedia.org/wikipedia/commons/7/70/Chocolate.jpg"},
@@ -109,7 +130,6 @@ function choose(option){
   setTimeout(showNews, 3000);
 }
 
-// Конец игры
 function showGameOver(score) {
   document.getElementById('news').style.display = "none";
   document.getElementById('timer').style.display = "none";
@@ -121,6 +141,7 @@ function showGameOver(score) {
   const scoreText = document.getElementById('gameOverScore');
 
   gameOver.style.display = 'block';
+  gameOver.classList.remove('show');
 
   if(score >= 5){
     title.innerText = "🎉 Du hast gewonnen!";
@@ -131,10 +152,14 @@ function showGameOver(score) {
   }
 
   scoreText.innerText = "Punkte: " + score;
+
+  setTimeout(() => {
+    gameOver.classList.add('show');
+  }, 50);
 }
 
-// Перезапуск игры
 function restartGame() {
+  document.getElementById('gameOver').classList.remove('show');
   document.getElementById('gameOver').style.display = 'none';
   document.getElementById('news').style.display = 'block';
   document.getElementById('timer').style.display = 'block';

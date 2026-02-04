@@ -96,8 +96,18 @@ const newsList = [
   {text: "Statistisches Bundesamt: Geburtenrate sinkt seit 2015", answer: "Fakt", explanation: "Das stimmt laut Destatis.", img: "https://upload.wikimedia.org/wikipedia/commons/2/28/Destatis_Logo.svg"},
   {text: "Schokolade heilt Krebs in 7 Tagen", answer: "Fake", explanation: "Das ist eine Falschmeldung, es gibt keine solche Studie.", img: "images/schokolade.jpg"},
   {text: "UN-Bericht: Globale CO₂-Emissionen steigen weiterhin", answer: "Fakt", explanation: "Richtig. Quelle: https://www.unep.org/resources/emissions-gap-report-2023", img: "https://upload.wikimedia.org/wikipedia/commons/0/05/United_Nations_logo.svg"},
-  // ... добавьте остальные новости так же
+  {text: "Facebook verbietet allen Nutzern über 50 die Anmeldung", answer: "Fake", explanation: "Falsch. So eine Regel gibt es nicht.", img: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"},
+  {text: "NASA veröffentlicht neue Bilder vom Mars", answer: "Fakt", explanation: "Richtig, der Marsrover liefert regelmäßig neue Bilder.", img: "images/marc.jpg"},
+  {text: "Yoga verbessert die Schlafqualität", answer: "Fakt", explanation: "Studien zeigen, dass regelmäßiges Yoga den Schlaf verbessern kann.", img: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Yoga_asana.jpg"},
+  {text: "In Deutschland wird Schokolade nach 22 Uhr verboten", answer: "Fake", explanation: "Das ist ein Meme, kein Gesetz.", img: "images/schokolade.jpg"},
+  {text: "Lokale Zeitung: Strompreise steigen im nächsten Jahr", answer: "Fakt", explanation: "Richtig, laut offiziellen Mitteilungen steigen die Preise.", img: "images/strom.jpg"},
+  {text: "Neue App heilt Migräne in 5 Minuten", answer: "Fake", explanation: "Das ist Unsinn, es gibt keine solche App.", img: "images/app.jpg"},
+  {text: "EU genehmigt neues Förderprogramm für erneuerbare Energien", answer: "Fakt", explanation: "Das stimmt, offizielle EU-Seite veröffentlicht.", img: "images/eu_energie.jpg"},
+  {text: "Katzen können plötzlich sprechen lernen", answer: "Fake", explanation: "Katzen können nicht sprechen.", img: "images/cat.jpg"},
+  {text: "WHO meldet Rückgang der Malariafälle weltweit", answer: "Fakt", explanation: "Laut WHO-Bericht nehmen die Malariafälle ab.", img: "images/who.jpg"},
+  {text: "Regierung beschließt Schokoladepflicht in Schulen", answer: "Fake", explanation: "Ein Meme, keine echte Regel.", img: "images/chocolate_school.jpg"}
 ];
+
 
 let current = 0;
 let score = 0;
@@ -119,6 +129,7 @@ function showNews() {
     showGameOver(score);
     return;
   }
+
   document.getElementById('newsText').innerHTML = newsList[current].text;
   document.getElementById('newsImg').src = newsList[current].img;
   document.getElementById('newsImg').style.display = "block";
@@ -126,24 +137,24 @@ function showNews() {
 
   // Сброс цвета кнопок
   document.querySelectorAll(".choice").forEach(btn => {
-    btn.classList.remove("correct","wrong");
+    btn.classList.remove("correct", "wrong");
     btn.disabled = false;
   });
 
   timeLeft = 30;
   document.getElementById('timer').innerHTML = timeLeft;
   document.getElementById('progressBar').style.width = "100%";
-  
+
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     timeLeft--;
     document.getElementById('timer').innerHTML = timeLeft;
     document.getElementById('progressBar').style.width = (timeLeft/30*100) + "%";
-    
+
     if(timeLeft <= 0){
       clearInterval(timerInterval);
       document.getElementById('result').style.display = 'block';
-      document.getElementById('result').innerHTML = "Zeit vorbei! ❌ " + newsList[current].explanation;
+      document.getElementById('result').innerHTML = "Zeit vorbei! ❌ " + newsList[current].explanation + " | Punktestand: " + score;
       current++;
       setTimeout(showNews, 3000);
     }
@@ -156,17 +167,23 @@ function choose(option, button) {
   let explanation = newsList[current].explanation;
 
   document.getElementById('result').style.display = 'block';
-  document.getElementById('result').innerHTML = explanation;
+
+  if(option === correct){
+    score += 1;
+    document.getElementById('result').innerHTML = "Richtig! ✅ " + explanation + " | Punktestand: " + score;
+  } else {
+    document.getElementById('result').innerHTML = "Falsch! ❌ " + explanation + " | Punktestand: " + score;
+  }
 
   // Подсветка кнопок
   document.querySelectorAll(".choice").forEach(btn => {
     btn.disabled = true;
-    if(btn.textContent === correct) btn.classList.add("correct");
-    if(btn !== button && btn.textContent === option && option !== correct) btn.classList.add("wrong");
+    btn.classList.remove("correct","wrong");
+    if(btn.textContent === correct) btn.classList.add("correct"); // зелёный правильный
   });
 
-  if(option === correct){
-    score += 1;
+  if(option !== correct && option !== "Unsicher"){
+    button.classList.add("wrong"); // красный только выбранный неправильный
   }
 
   current++;
@@ -188,12 +205,12 @@ function showGameOver(score) {
   gameOver.style.display = 'block';
   gameOver.classList.remove('show');
 
-  if(score >= 10){
+  if(score >= 3){
     title.innerText = "🎉 Du hast gewonnen!";
-    message.innerText = "Glückwunsch! Du hast mehr als 10 Punkte gesammelt.";
+    message.innerText = "Glückwunsch! Du hast mehr als 3 Punkte gesammelt.";
   } else {
     title.innerText = "😞 Du hast verloren!";
-    message.innerText = "Leider hast du weniger als 10 Punkte erreicht.";
+    message.innerText = "Leider hast du weniger als 3 Punkte erreicht.";
   }
 
   scoreText.innerText = "Punkte: " + score;

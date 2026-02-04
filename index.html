@@ -11,6 +11,14 @@
   button { margin: 5px; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
   .result { margin-top: 20px; font-weight: bold; }
   .timer { font-size: 18px; color: #0d47a1; font-weight: bold; margin-bottom: 10px; }
+
+  /* Конец игры */
+  #gameOver { display:none; text-align:center; padding:20px; border-radius:12px; background-color:#f0f8ff; box-shadow:0 4px 12px rgba(0,0,0,0.2); max-width:500px; margin:50px auto; font-family:sans-serif; }
+  #gameOverTitle { font-size:28px; margin-bottom:10px; }
+  #gameOverMessage { font-size:18px; margin-bottom:15px; }
+  #gameOverScore { font-size:22px; font-weight:bold; }
+  #gameOver button { padding:10px 20px; font-size:16px; border:none; border-radius:8px; background-color:#007bff; color:white; cursor:pointer; transition:0.2s; }
+  #gameOver button:hover { background-color:#0056b3; }
 </style>
 </head>
 <body>
@@ -31,6 +39,14 @@
 </div>
 
 <div class="result" id="result"></div>
+
+<!-- Конец игры -->
+<div id="gameOver">
+  <h2 id="gameOverTitle"></h2>
+  <p id="gameOverMessage"></p>
+  <p id="gameOverScore"></p>
+  <button onclick="restartGame()">Nochmals spielen</button>
+</div>
 
 <script>
 const newsList = [
@@ -54,10 +70,7 @@ let timerInterval;
 function showNews() {
   if(current >= newsList.length){
     clearInterval(timerInterval);
-    document.getElementById('newsText').innerHTML = "Spiel beendet! Dein Punktestand: " + score;
-    document.getElementById('newsImg').style.display = "none";
-    document.getElementById('result').innerHTML = "";
-    document.getElementById('timer').innerHTML = "";
+    showGameOver(score);
     return;
   }
   
@@ -94,6 +107,41 @@ function choose(option){
   }
   current += 1;
   setTimeout(showNews, 3000);
+}
+
+// Конец игры
+function showGameOver(score) {
+  document.getElementById('news').style.display = "none";
+  document.getElementById('timer').style.display = "none";
+  document.getElementById('result').style.display = "none";
+
+  const gameOver = document.getElementById('gameOver');
+  const title = document.getElementById('gameOverTitle');
+  const message = document.getElementById('gameOverMessage');
+  const scoreText = document.getElementById('gameOverScore');
+
+  gameOver.style.display = 'block';
+
+  if(score >= 5){
+    title.innerText = "🎉 Du hast gewonnen!";
+    message.innerText = "Glückwunsch! Du hast mehr als 5 Punkte gesammelt.";
+  } else {
+    title.innerText = "😞 Du hast verloren!";
+    message.innerText = "Leider hast du weniger als 5 Punkte erreicht.";
+  }
+
+  scoreText.innerText = "Punkte: " + score;
+}
+
+// Перезапуск игры
+function restartGame() {
+  document.getElementById('gameOver').style.display = 'none';
+  document.getElementById('news').style.display = 'block';
+  document.getElementById('timer').style.display = 'block';
+  document.getElementById('result').style.display = 'block';
+  current = 0;
+  score = 0;
+  showNews();
 }
 
 showNews();

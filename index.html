@@ -5,12 +5,25 @@
 <title>Fake oder Fakt?</title>
 <style>
   body { font-family: Arial, sans-serif; background: #e3f2fd; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-  h1 { color: #0d47a1; }
-  .news-box { background: white; padding: 20px; border-radius: 10px; margin: 20px; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);}
-  img { max-width: 100%; border-radius: 10px; margin-bottom: 10px; }
-  button { margin: 5px; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
-  .result { margin-top: 20px; font-weight: bold; }
-  .timer { font-size: 18px; color: #0d47a1; font-weight: bold; margin-bottom: 10px; }
+  h1 { color: #0d47a1; margin-bottom: 30px; }
+
+  /* Стартовое меню */
+  #startMenu { text-align:center; margin-top:50px; }
+  #startMenu button { padding:15px 30px; font-size:18px; border:none; border-radius:10px; background-color:#007bff; color:white; cursor:pointer; transition:0.2s; }
+  #startMenu button:hover { background-color:#0056b3; transform: scale(1.05); }
+
+  /* Новости */
+  .news-box { background: white; padding: 40px 20px; border-radius: 15px; margin: 20px; max-width: 700px; width: 90%; box-shadow: 0 6px 12px rgba(0,0,0,0.25); display:flex; flex-direction:column; align-items:center; min-height:300px; }
+  #newsText { font-size:24px; text-align:center; margin-bottom:20px; border:2px solid #0d47a1; padding:15px; border-radius:10px; width:100%; }
+
+  img { max-width: 100%; border-radius: 10px; margin-bottom: 20px; }
+
+  button.choice { margin: 5px; padding: 15px 25px; font-size: 18px; border-radius: 8px; cursor: pointer; }
+  button.choice:hover { transform: scale(1.05); transition:0.2s; }
+
+  .result { margin-top: 20px; font-weight: bold; font-size:18px; text-align:center; }
+
+  .timer { font-size: 20px; color: #0d47a1; font-weight: bold; margin-bottom: 15px; }
 
   /* Конец игры */
   #gameOver { 
@@ -23,18 +36,11 @@
     max-width:500px; 
     margin:50px auto; 
     font-family:sans-serif; 
-
-    /* для анимации */
     opacity: 0;
     transform: scale(0.8);
     transition: all 0.5s ease;
   }
-
-  #gameOver.show {
-    opacity: 1;
-    transform: scale(1);
-  }
-
+  #gameOver.show { opacity:1; transform: scale(1); }
   #gameOverTitle { font-size:28px; margin-bottom:10px; }
   #gameOverMessage { font-size:18px; margin-bottom:15px; }
   #gameOverScore { font-size:22px; font-weight:bold; }
@@ -46,20 +52,29 @@
 
 <h1>Fake oder Fakt?</h1>
 
-<div class="timer" id="timer">30</div>
+<!-- Стартовое меню -->
+<div id="startMenu">
+  <button onclick="startGame()">Spiel starten</button>
+</div>
 
-<div class="news-box" id="news">
+<!-- Таймер -->
+<div class="timer" id="timer" style="display:none;">30</div>
+
+<!-- Новости -->
+<div class="news-box" id="news" style="display:none;">
   <img id="newsImg" src="" alt="">
   <div id="newsText"></div>
 </div>
 
-<div>
-  <button onclick="choose('Fakt')">Fakt</button>
-  <button onclick="choose('Fake')">Fake</button>
-  <button onclick="choose('Unsicher')">Unsicher</button>
+<!-- Кнопки выбора -->
+<div id="choices" style="display:none; text-align:center;">
+  <button class="choice" onclick="choose('Fakt')">Fakt</button>
+  <button class="choice" onclick="choose('Fake')">Fake</button>
+  <button class="choice" onclick="choose('Unsicher')">Unsicher</button>
 </div>
 
-<div class="result" id="result"></div>
+<!-- Результат -->
+<div class="result" id="result" style="display:none;"></div>
 
 <!-- Конец игры -->
 <div id="gameOver">
@@ -74,10 +89,10 @@ const newsList = [
   {text: "Bundesregierung beschließt neues Klimaschutzgesetz", answer: "Fakt", explanation: "Die Bundesregierung hat das neue Gesetz offiziell beschlossen.", img: "images/Bundeskanzleramt.jpg"},
   {text: "Neue Impfung schützt vor allen Viren", answer: "Fake", explanation: "Das ist falsch. Impfungen schützen nur vor bestimmten Viren, nicht vor allen.", img: "images/vaccine.jpg"},
   {text: "Statistisches Bundesamt: Geburtenrate sinkt seit 2015", answer: "Fakt", explanation: "Das stimmt laut Destatis.", img: "https://upload.wikimedia.org/wikipedia/commons/2/28/Destatis_Logo.svg"},
-  {text: "Schokolade heilt Krebs in 7 Tagen", answer: "Fake", explanation: "Das ist eine Falschmeldung, es gibt keine solche Studie.", img: "images/schocolade.jpg"},
+  {text: "Schokolade heilt Krebs in 7 Tagen", answer: "Fake", explanation: "Das ist eine Falschmeldung, es gibt keine solche Studie.", img: "images/schokolade.jpg"},
   {text: "UN-Bericht: Globale CO₂-Emissionen steigen weiterhin", answer: "Fakt", explanation: "Richtig. Quelle: https://www.unep.org/resources/emissions-gap-report-2023", img: "https://upload.wikimedia.org/wikipedia/commons/0/05/United_Nations_logo.svg"},
   {text: "Facebook verbietet allen Nutzern über 50 die Anmeldung", answer: "Fake", explanation: "Falsch. So eine Regel gibt es nicht.", img: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"},
-  {text: "NASA veröffentlicht neue Bilder vom Mars", answer: "Fakt", explanation: "Richtig, der Marsrover liefert regelmäßig neue Bilder.", img: "images/marc.jpg"},
+  {text: "NASA veröffentlicht neue Bilder vom Mars", answer: "Fakt", explanation: "Richtig, der Marsrover liefert regelmäßig neue Bilder.", img: "images/mars.jpg"},
   {text: "Yoga verbessert die Schlafqualität", answer: "Fakt", explanation: "Studien zeigen, dass regelmäßiges Yoga den Schlaf verbessern kann.", img: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Yoga_asana.jpg"},
   {text: "In Deutschland wird Schokolade nach 22 Uhr verboten", answer: "Fake", explanation: "Das ist ein Meme, kein Gesetz.", img: "images/schokolade.jpg"},
   {text: "Lokale Zeitung: Strompreise steigen im nächsten Jahr", answer: "Fakt", explanation: "Richtig, laut offiziellen Mitteilungen steigen die Preise.", img: "images/strom.jpg"}
@@ -88,6 +103,16 @@ let score = 0;
 let timeLeft = 30;
 let timerInterval;
 
+// --- Старт игры ---
+function startGame() {
+  document.getElementById('startMenu').style.display = 'none';
+  document.getElementById('news').style.display = 'flex';
+  document.getElementById('choices').style.display = 'block';
+  document.getElementById('timer').style.display = 'block';
+  showNews();
+}
+
+// --- Показ новости ---
 function showNews() {
   if(current >= newsList.length){
     clearInterval(timerInterval);
@@ -98,7 +123,7 @@ function showNews() {
   document.getElementById('newsText').innerHTML = newsList[current].text;
   document.getElementById('newsImg').src = newsList[current].img;
   document.getElementById('newsImg').style.display = "block";
-  document.getElementById('result').innerHTML = "";
+  document.getElementById('result').style.display = 'none';
   
   timeLeft = 30;
   document.getElementById('timer').innerHTML = timeLeft;
@@ -108,6 +133,7 @@ function showNews() {
     document.getElementById('timer').innerHTML = timeLeft;
     if(timeLeft <= 0){
       clearInterval(timerInterval);
+      document.getElementById('result').style.display = 'block';
       document.getElementById('result').innerHTML = "Zeit vorbei! ❌ " + newsList[current].explanation;
       current++;
       setTimeout(showNews, 3000);
@@ -115,11 +141,13 @@ function showNews() {
   }, 1000);
 }
 
+// --- Выбор ---
 function choose(option){
   clearInterval(timerInterval);
   let correct = newsList[current].answer;
   let explanation = newsList[current].explanation;
   
+  document.getElementById('result').style.display = 'block';
   if(option === correct){
     score += 1;
     document.getElementById('result').innerHTML = "Richtig! ✅ " + explanation + " | Punktestand: " + score;
@@ -130,8 +158,10 @@ function choose(option){
   setTimeout(showNews, 3000);
 }
 
+// --- Конец игры ---
 function showGameOver(score) {
   document.getElementById('news').style.display = "none";
+  document.getElementById('choices').style.display = "none";
   document.getElementById('timer').style.display = "none";
   document.getElementById('result').style.display = "none";
 
@@ -158,18 +188,17 @@ function showGameOver(score) {
   }, 50);
 }
 
+// --- Перезапуск ---
 function restartGame() {
   document.getElementById('gameOver').classList.remove('show');
   document.getElementById('gameOver').style.display = 'none';
-  document.getElementById('news').style.display = 'block';
-  document.getElementById('timer').style.display = 'block';
-  document.getElementById('result').style.display = 'block';
   current = 0;
   score = 0;
+  document.getElementById('news').style.display = 'flex';
+  document.getElementById('choices').style.display = 'block';
+  document.getElementById('timer').style.display = 'block';
   showNews();
 }
-
-showNews();
 </script>
 
 </body>

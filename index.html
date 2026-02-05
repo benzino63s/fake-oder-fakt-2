@@ -7,90 +7,88 @@
 <style>
   body { font-family: Arial, sans-serif; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:100vh; background: linear-gradient(to bottom, #e3f2fd, #bbdefb); }
   
-  /* Заголовок + счетчик */
   #header { display:flex; justify-content:space-between; align-items:center; width:90%; max-width:700px; margin:10px auto; }
-  #header h1 { font-size:clamp(1.8rem,4vw,2.5rem); margin:0; color:#0d47a1; text-align:left; }
+  #header h1 { font-size:clamp(1.8rem,4vw,2.5rem); margin:0; color:#0d47a1; }
   #scoreDisplay { font-size:clamp(1rem,3vw,1.5rem); color:#0d47a1; font-weight:bold; }
 
-  /* Стартовое меню */
   #startMenu { text-align:center; margin-top:50px; }
   #startMenu button { padding:1rem 2rem; font-size:1.3rem; border:none; border-radius:12px; background-color:#007bff; color:white; cursor:pointer; transition:0.3s; }
   #startMenu button:hover { background-color:#0056b3; transform:scale(1.05); }
 
-  /* Карточка новости */
-  .news-box { background:white; padding:2rem 1rem; border-radius:20px; margin:1rem; width:90%; max-width:700px; min-height:350px; box-shadow:0 6px 18px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; opacity:0; transform:translateY(20px); transition: all 0.5s ease; }
+  .news-box { background:white; padding:2rem 1rem; border-radius:20px; margin:1rem; width:90%; max-width:700px; min-height:350px; box-shadow:0 6px 18px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; opacity:0; transform:translateY(20px); transition:0.5s; }
   .news-box.show { opacity:1; transform:translateY(0); }
-  #newsText { font-size:clamp(1.2rem,2vw,2rem); text-align:center; margin-bottom:1rem; border:2px solid #0d47a1; padding:1rem; border-radius:12px; width:100%; word-wrap:break-word; background:#f9f9f9; }
 
-  img { max-width:100%; max-height:40vh; border-radius:12px; margin-bottom:1rem; object-fit:contain; opacity:0; transition: opacity 0.5s ease; }
+  #newsText { font-size:clamp(1.2rem,2vw,2rem); text-align:center; border:2px solid #0d47a1; padding:1rem; border-radius:12px; width:100%; background:#f9f9f9; }
 
-  /* Кнопки выбора */
-  #choices { text-align:center; margin-top:10px; }
-  button.choice { margin:0.5rem; padding:clamp(0.6rem,2vw,1rem) clamp(1.2rem,3vw,2rem); font-size:clamp(1rem,2vw,1.3rem); border-radius:12px; cursor:pointer; background-color:#e0e0e0; transition:0.3s; min-width:100px; }
+  img { max-width:100%; max-height:40vh; border-radius:12px; margin-bottom:1rem; object-fit:contain; opacity:0; transition:0.5s; }
+
+  #choices { margin-top:10px; }
+  button.choice { margin:0.5rem; padding:0.7rem 1.5rem; font-size:1.2rem; border-radius:12px; cursor:pointer; background:#e0e0e0; }
   button.choice:hover { transform:scale(1.05); }
-  .correct { background-color:#4CAF50 !important; color:white; }
-  .wrong { background-color:#F44336 !important; color:white; }
+  .correct { background:#4CAF50 !important; color:white; }
+  .wrong { background:#F44336 !important; color:white; }
 
-  /* Результат */
-  .result { margin-top:1rem; font-weight:bold; font-size:1rem; text-align:center; display:none; }
+  .result { margin-top:1rem; font-weight:bold; display:none; }
 
-  /* Таймер и прогресс */
-  .timer { font-size:clamp(1rem,2.5vw,1.3rem); color:#0d47a1; font-weight:bold; margin-bottom:0.5rem; }
-  #progressContainer { width:90%; max-width:700px; height:20px; background:#cfd8dc; border-radius:12px; overflow:hidden; margin-bottom:10px; }
-  #progressBar { width:100%; height:100%; background:#0d47a1; transition: width 0.2s linear, background 0.2s linear; }
+  .timer { font-size:1.2rem; font-weight:bold; color:#0d47a1; }
+  #progressContainer { width:90%; max-width:700px; height:20px; background:#cfd8dc; border-radius:12px; overflow:hidden; }
+  #progressBar { height:100%; background:#0d47a1; transition:0.2s; }
 
-  #questionCount { margin-bottom:10px; font-size:clamp(1rem,3vw,1.2rem); color:#0d47a1; }
+  #questionCount { margin-bottom:10px; font-size:1.1rem; color:#0d47a1; }
 
-  /* Конец игры */
-  #gameOver { display:none; text-align:center; padding:2rem; border-radius:15px; background-color:#f0f8ff; box-shadow:0 6px 18px rgba(0,0,0,0.3); max-width:500px; margin:3rem auto; font-family:sans-serif; opacity:0; transform:scale(0.8); transition:all 0.5s ease; }
+  #gameOver { display:none; text-align:center; padding:2rem; border-radius:15px; background:#f0f8ff; box-shadow:0 6px 18px rgba(0,0,0,0.3); max-width:500px; margin:3rem auto; opacity:0; transform:scale(0.8); transition:0.5s; }
   #gameOver.show { opacity:1; transform:scale(1); }
-  #gameOverTitle { font-size:clamp(1.8rem,4vw,2rem); margin-bottom:1rem; }
-  #gameOverMessage { font-size:clamp(1rem,3vw,1.2rem); margin-bottom:1rem; }
-  #gameOverScore { font-size:clamp(1.2rem,3vw,1.5rem); font-weight:bold; }
-  #gameOver button { padding:clamp(0.8rem,2vw,1rem) clamp(1.5rem,3vw,2rem); font-size:clamp(1rem,2vw,1.2rem); border:none; border-radius:12px; background-color:#007bff; color:white; cursor:pointer; transition:0.3s; }
-  #gameOver button:hover { background-color:#0056b3; transform:scale(1.05); }
 </style>
 </head>
+
 <body>
 
-<!-- Заголовок + счетчик -->
 <div id="header">
   <h1>Fake oder Fakt?</h1>
   <div id="scoreDisplay">Punkte: 0</div>
 </div>
 
-<!-- Стартовое меню -->
 <div id="startMenu">
   <button id="startButton">Spiel starten</button>
 </div>
 
-<!-- Таймер, прогресс, счетчик вопросов -->
 <div class="timer" id="timer" style="display:none;">20</div>
-<div id="questionCount" style="display:none;">Frage 1 von 14</div>
+<div id="questionCount" style="display:none;"></div>
 <div id="progressContainer" style="display:none;">
   <div id="progressBar"></div>
 </div>
 
-<!-- Карточка новости -->
 <div class="news-box" id="news" style="display:none;">
-  <img id="newsImg" src="" alt="">
+  <img id="newsImg">
   <div id="newsText"></div>
 </div>
 
-<!-- Кнопки выбора -->
 <div id="choices" style="display:none;">
-  <button class="choice" onclick="choose('Fakt', this)">Fakt</button>
-  <button class="choice" onclick="choose('Fake', this)">Fake</button>
-  <button class="choice" onclick="choose('Unsicher', this)">Unsicher</button>
+  <button class="choice" onclick="choose('Fakt',this)">Fakt</button>
+  <button class="choice" onclick="choose('Fake',this)">Fake</button>
+  <button class="choice" onclick="choose('Unsicher',this)">Unsicher</button>
 </div>
 
 <div class="result" id="result"></div>
 
-<!-- Конец игры -->
 <div id="gameOver">
   <h2 id="gameOverTitle"></h2>
   <p id="gameOverMessage"></p>
   <p id="gameOverScore"></p>
+
+  <!-- НАПОМИНАЛКА -->
+  <div style="text-align:left;margin-top:1.5rem;font-size:0.95rem;">
+    <h3 style="text-align:center;color:#0d47a1;">🧐 Worauf muss man achten?</h3>
+    <ul>
+      <li>🔍 Quelle prüfen – ist sie seriös?</li>
+      <li>📅 Datum checken – alte Nachrichten wirken oft aktuell</li>
+      <li>📰 Überschrift ≠ Inhalt (Clickbait)</li>
+      <li>📸 Bilder können manipuliert oder aus dem Kontext sein</li>
+      <li>🌐 Gibt es mehrere unabhängige Quellen?</li>
+      <li>⚠️ Extreme Aussagen = Warnsignal</li>
+    </ul>
+  </div>
+
   <button onclick="restartGame()">Nochmals spielen</button>
 </div>
 
@@ -106,15 +104,20 @@ const newsList = [
   {text:"Yoga verbessert die Schlafqualität", answer:"Fakt", explanation:"Studien zeigen positive Effekte.", img:"images/yoga.jpg"},
   {text:"In Deutschland wird Schokolade nach 22 Uhr verboten", answer:"Fake", explanation:"Nur ein Meme.", img:"images/schokolade.jpg"},
   {text:"Smartphones verursachen Krebs innerhalb eines Monats", answer:"Fake", explanation:"Keine seriösen Studien.", img:"images/phone.jpg"},
-  {text:"Olympische Spiele 2024 fanden in Paris statt", answer:"Fakt", explanation:"Genau richtig,in 2024 stattgefunden.", img:"images/paris.jpg"},
-  {text:"Bananen heilen Erkältungen sofort", answer:"Fake", explanation:"Falsch, Früchte heilen Erkältungen nicht sofort.", img:"images/banana.jpg"},
+  {text:"Olympische Spiele 2024 fanden in Paris statt", answer:"Fakt", explanation:"Genau richtig, 2024 in Paris.", img:"images/paris.jpg"},
+  {text:"Bananen heilen Erkältungen sofort", answer:"Fake", explanation:"Früchte heilen Erkältungen nicht sofort.", img:"images/banana.jpg"},
   {text:"Weltbank berichtet über globales Wirtschaftswachstum", answer:"Fakt", explanation:"Berichte bestätigen Wachstum.", img:"images/worldbank.jpg"},
   {text:"Katzen können fliegen, wenn man sie gut trainiert", answer:"Fake", explanation:"Unmöglich, nur ein Witz.", img:"images/cat.jpg"}
 ];
 
 let current=0, score=0, timeLeft=20, timerInterval;
 
-function shuffle(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]];}}
+function shuffle(array){
+  for(let i=array.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+}
 
 document.getElementById('startButton').addEventListener('click', startGame);
 
@@ -133,47 +136,61 @@ function startGame(){
 
 function showNews(){
   if(current>=newsList.length){ clearInterval(timerInterval); showGameOver(score); return; }
-  const news=document.getElementById('news'); news.classList.remove('show'); void news.offsetWidth;
-  document.getElementById('newsText').innerHTML=newsList[current].text;
-  const img=document.getElementById('newsImg'); img.style.opacity=0; img.src=newsList[current].img;
-  news.classList.add('show'); setTimeout(()=>{img.style.opacity=1;},200);
+
+  document.getElementById('newsText').innerText=newsList[current].text;
+  const img=document.getElementById('newsImg');
+  img.style.opacity=0;
+  img.src=newsList[current].img;
+  setTimeout(()=>img.style.opacity=1,200);
 
   document.getElementById('result').style.display='none';
-  document.querySelectorAll(".choice").forEach(btn=>{btn.classList.remove("correct","wrong"); btn.disabled=false;});
+  document.querySelectorAll(".choice").forEach(btn=>{btn.disabled=false; btn.classList.remove("correct","wrong");});
 
-  timeLeft=20; document.getElementById('timer').innerHTML=timeLeft;
+  timeLeft=20;
+  document.getElementById('timer').innerText=timeLeft;
+  document.getElementById('questionCount').innerText=`Frage ${current+1} von ${newsList.length}`;
   updateProgressBar();
-  document.getElementById('questionCount').innerText="Frage "+(current+1)+" von "+newsList.length;
 
   clearInterval(timerInterval);
   timerInterval=setInterval(()=>{
-    timeLeft--; document.getElementById('timer').innerHTML=timeLeft; updateProgressBar();
-    if(timeLeft<=0){ clearInterval(timerInterval); document.getElementById('result').style.display='block'; document.getElementById('result').innerHTML="Zeit vorbei! ❌ "+newsList[current].explanation; current++; setTimeout(showNews,2000);}
+    timeLeft--;
+    document.getElementById('timer').innerText=timeLeft;
+    updateProgressBar();
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      document.getElementById('result').style.display='block';
+      document.getElementById('result').innerText="Zeit vorbei! ❌ "+newsList[current].explanation;
+      current++;
+      setTimeout(showNews,2000);
+    }
   },1000);
 }
 
 function updateProgressBar(){
-  const bar=document.getElementById('progressBar');
-  bar.style.width=(timeLeft/20*100)+"%";
-  if(timeLeft>12) bar.style.background="#4CAF50";
-  else if(timeLeft>6) bar.style.background="#FFEB3B";
-  else bar.style.background="#F44336";
+  document.getElementById('progressBar').style.width=(timeLeft/20*100)+"%";
 }
 
 function choose(option, button){
   clearInterval(timerInterval);
-  let correct=newsList[current].answer;
-  let explanation=newsList[current].explanation;
+  const correct=newsList[current].answer;
   document.getElementById('result').style.display='block';
 
-  if(option===correct){ score+=1; document.getElementById('result').innerHTML="Richtig! ✅ "+explanation; }
-  else{ document.getElementById('result').innerHTML="Falsch! ❌ "+explanation; }
+  if(option===correct){
+    score++;
+    document.getElementById('result').innerText="Richtig! ✅ "+newsList[current].explanation;
+  } else {
+    document.getElementById('result').innerText="Falsch! ❌ "+newsList[current].explanation;
+  }
 
   document.getElementById('scoreDisplay').innerText="Punkte: "+score;
-  document.querySelectorAll(".choice").forEach(btn=>{btn.disabled=true; if(btn.textContent===correct) btn.classList.add("correct");});
+  document.querySelectorAll(".choice").forEach(btn=>{
+    btn.disabled=true;
+    if(btn.textContent===correct) btn.classList.add("correct");
+  });
   if(option!==correct && option!=="Unsicher") button.classList.add("wrong");
 
-  current++; setTimeout(showNews,2000);
+  current++;
+  setTimeout(showNews,2000);
 }
 
 function showGameOver(score){
@@ -181,27 +198,27 @@ function showGameOver(score){
   document.getElementById('choices').style.display='none';
   document.getElementById('timer').style.display='none';
   document.getElementById('progressContainer').style.display='none';
-  document.getElementById('result').style.display='none';
   document.getElementById('questionCount').style.display='none';
 
-  const gameOver=document.getElementById('gameOver');
-  const title=document.getElementById('gameOverTitle');
-  const message=document.getElementById('gameOverMessage');
-  const scoreText=document.getElementById('gameOverScore');
-
-  gameOver.style.display='block'; gameOver.classList.remove('show');
-
+  const go=document.getElementById('gameOver');
   if(score>=Math.ceil(newsList.length/2)){
-    title.innerText="🎉 Du hast gewonnen!"; message.innerText="Glückwunsch! Du hast mehr als die Hälfte der Punkte erreicht.";
+    document.getElementById('gameOverTitle').innerText="🎉 Du hast gewonnen!";
+    document.getElementById('gameOverMessage').innerText="Gute Medienkompetenz!";
   } else {
-    title.innerText="😞 Du hast verloren!"; message.innerText="Leider hast du weniger als die Hälfte der Punkte erreicht.";
+    document.getElementById('gameOverTitle').innerText="😞 Du hast verloren!";
+    document.getElementById('gameOverMessage').innerText="Übung macht den Meister.";
   }
+  document.getElementById('gameOverScore').innerText="Punkte: "+score;
 
-  scoreText.innerText="Punkte: "+score;
-  setTimeout(()=>{ gameOver.classList.add('show'); },50);
+  go.style.display='block';
+  setTimeout(()=>go.classList.add('show'),50);
 }
 
-function restartGame(){ document.getElementById('gameOver').classList.remove('show'); document.getElementById('gameOver').style.display='none'; startGame();}
+function restartGame(){
+  document.getElementById('gameOver').classList.remove('show');
+  document.getElementById('gameOver').style.display='none';
+  startGame();
+}
 </script>
 
 </body>

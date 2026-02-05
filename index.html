@@ -15,28 +15,28 @@
   #startMenu button { padding:1rem 2rem; font-size:1.3rem; border:none; border-radius:12px; background-color:#007bff; color:white; cursor:pointer; transition:0.3s; }
   #startMenu button:hover { background-color:#0056b3; transform:scale(1.05); }
 
-  .news-box { background:white; padding:2rem 1rem; border-radius:20px; margin:1rem; width:90%; max-width:700px; min-height:350px; box-shadow:0 6px 18px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; opacity:0; transform:translateY(20px); transition:0.5s; }
+  .news-box { background:white; padding:2rem 1rem; border-radius:20px; margin:1rem; width:90%; max-width:700px; min-height:350px; box-shadow:0 6px 18px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; opacity:0; transform:translateY(20px); transition: all 0.5s ease; }
   .news-box.show { opacity:1; transform:translateY(0); }
 
-  #newsText { font-size:clamp(1.2rem,2vw,2rem); text-align:center; border:2px solid #0d47a1; padding:1rem; border-radius:12px; width:100%; background:#f9f9f9; }
+  #newsText { font-size:clamp(1.2rem,2vw,2rem); text-align:center; margin-bottom:1rem; border:2px solid #0d47a1; padding:1rem; border-radius:12px; width:100%; background:#f9f9f9; }
 
-  img { max-width:100%; max-height:40vh; border-radius:12px; margin-bottom:1rem; object-fit:contain; opacity:0; transition:0.5s; }
+  img { max-width:100%; max-height:40vh; border-radius:12px; margin-bottom:1rem; object-fit:contain; opacity:0; transition: opacity 0.5s ease; }
 
-  #choices { margin-top:10px; }
-  button.choice { margin:0.5rem; padding:0.7rem 1.5rem; font-size:1.2rem; border-radius:12px; cursor:pointer; background:#e0e0e0; }
+  #choices { text-align:center; margin-top:10px; }
+  button.choice { margin:0.5rem; padding:clamp(0.6rem,2vw,1rem) clamp(1.2rem,3vw,2rem); font-size:clamp(1rem,2vw,1.3rem); border-radius:12px; cursor:pointer; background-color:#e0e0e0; transition:0.3s; min-width:100px; }
   button.choice:hover { transform:scale(1.05); }
-  .correct { background:#4CAF50 !important; color:white; }
-  .wrong { background:#F44336 !important; color:white; }
+  .correct { background-color:#4CAF50 !important; color:white; }
+  .wrong { background-color:#F44336 !important; color:white; }
 
-  .result { margin-top:1rem; font-weight:bold; display:none; }
+  .result { margin-top:1rem; font-weight:bold; font-size:1rem; text-align:center; display:none; }
 
-  .timer { font-size:1.2rem; font-weight:bold; color:#0d47a1; }
-  #progressContainer { width:90%; max-width:700px; height:20px; background:#cfd8dc; border-radius:12px; overflow:hidden; }
-  #progressBar { height:100%; background:#0d47a1; transition:0.2s; }
+  .timer { font-size:clamp(1rem,2.5vw,1.3rem); color:#0d47a1; font-weight:bold; margin-bottom:0.5rem; }
+  #progressContainer { width:90%; max-width:700px; height:20px; background:#cfd8dc; border-radius:12px; overflow:hidden; margin-bottom:10px; }
+  #progressBar { width:100%; height:100%; background:#0d47a1; transition: width 0.2s linear, background 0.2s linear; }
 
-  #questionCount { margin-bottom:10px; font-size:1.1rem; color:#0d47a1; }
+  #questionCount { margin-bottom:10px; font-size:clamp(1rem,3vw,1.2rem); color:#0d47a1; }
 
-  #gameOver { display:none; text-align:center; padding:2rem; border-radius:15px; background:#f0f8ff; box-shadow:0 6px 18px rgba(0,0,0,0.3); max-width:500px; margin:3rem auto; opacity:0; transform:scale(0.8); transition:0.5s; }
+  #gameOver { display:none; text-align:center; padding:2rem; border-radius:15px; background-color:#f0f8ff; box-shadow:0 6px 18px rgba(0,0,0,0.3); max-width:500px; margin:3rem auto; opacity:0; transform:scale(0.8); transition:all 0.5s ease; }
   #gameOver.show { opacity:1; transform:scale(1); }
 </style>
 </head>
@@ -59,14 +59,14 @@
 </div>
 
 <div class="news-box" id="news" style="display:none;">
-  <img id="newsImg">
+  <img id="newsImg" src="" alt="">
   <div id="newsText"></div>
 </div>
 
 <div id="choices" style="display:none;">
-  <button class="choice" onclick="choose('Fakt',this)">Fakt</button>
-  <button class="choice" onclick="choose('Fake',this)">Fake</button>
-  <button class="choice" onclick="choose('Unsicher',this)">Unsicher</button>
+  <button class="choice" onclick="choose('Fakt', this)">Fakt</button>
+  <button class="choice" onclick="choose('Fake', this)">Fake</button>
+  <button class="choice" onclick="choose('Unsicher', this)">Unsicher</button>
 </div>
 
 <div class="result" id="result"></div>
@@ -135,31 +135,41 @@ function startGame(){
 }
 
 function showNews(){
-  if(current>=newsList.length){ clearInterval(timerInterval); showGameOver(score); return; }
+  if(current>=newsList.length){ 
+    clearInterval(timerInterval); 
+    showGameOver(score); 
+    return; 
+  }
 
-  document.getElementById('newsText').innerText=newsList[current].text;
+  const news=document.getElementById('news');
+  news.classList.remove('show');
+  void news.offsetWidth; // 🔧 ФИКС АНИМАЦИИ
+
+  document.getElementById('newsText').innerHTML=newsList[current].text;
   const img=document.getElementById('newsImg');
   img.style.opacity=0;
   img.src=newsList[current].img;
-  setTimeout(()=>img.style.opacity=1,200);
+
+  news.classList.add('show');
+  setTimeout(()=>{ img.style.opacity=1; },200);
 
   document.getElementById('result').style.display='none';
-  document.querySelectorAll(".choice").forEach(btn=>{btn.disabled=false; btn.classList.remove("correct","wrong");});
+  document.querySelectorAll(".choice").forEach(btn=>{btn.classList.remove("correct","wrong"); btn.disabled=false;});
 
   timeLeft=20;
-  document.getElementById('timer').innerText=timeLeft;
+  document.getElementById('timer').innerHTML=timeLeft;
   document.getElementById('questionCount').innerText=`Frage ${current+1} von ${newsList.length}`;
   updateProgressBar();
 
   clearInterval(timerInterval);
   timerInterval=setInterval(()=>{
     timeLeft--;
-    document.getElementById('timer').innerText=timeLeft;
+    document.getElementById('timer').innerHTML=timeLeft;
     updateProgressBar();
     if(timeLeft<=0){
       clearInterval(timerInterval);
       document.getElementById('result').style.display='block';
-      document.getElementById('result').innerText="Zeit vorbei! ❌ "+newsList[current].explanation;
+      document.getElementById('result').innerHTML="Zeit vorbei! ❌ "+newsList[current].explanation;
       current++;
       setTimeout(showNews,2000);
     }
@@ -167,7 +177,8 @@ function showNews(){
 }
 
 function updateProgressBar(){
-  document.getElementById('progressBar').style.width=(timeLeft/20*100)+"%";
+  const bar=document.getElementById('progressBar');
+  bar.style.width=(timeLeft/20*100)+"%";
 }
 
 function choose(option, button){
@@ -177,9 +188,9 @@ function choose(option, button){
 
   if(option===correct){
     score++;
-    document.getElementById('result').innerText="Richtig! ✅ "+newsList[current].explanation;
+    document.getElementById('result').innerHTML="Richtig! ✅ "+newsList[current].explanation;
   } else {
-    document.getElementById('result').innerText="Falsch! ❌ "+newsList[current].explanation;
+    document.getElementById('result').innerHTML="Falsch! ❌ "+newsList[current].explanation;
   }
 
   document.getElementById('scoreDisplay').innerText="Punkte: "+score;
@@ -200,7 +211,7 @@ function showGameOver(score){
   document.getElementById('progressContainer').style.display='none';
   document.getElementById('questionCount').style.display='none';
 
-  const go=document.getElementById('gameOver');
+  const gameOver=document.getElementById('gameOver');
   if(score>=Math.ceil(newsList.length/2)){
     document.getElementById('gameOverTitle').innerText="🎉 Du hast gewonnen!";
     document.getElementById('gameOverMessage').innerText="Gute Medienkompetenz!";
@@ -208,10 +219,10 @@ function showGameOver(score){
     document.getElementById('gameOverTitle').innerText="😞 Du hast verloren!";
     document.getElementById('gameOverMessage').innerText="Übung macht den Meister.";
   }
-  document.getElementById('gameOverScore').innerText="Punkte: "+score;
 
-  go.style.display='block';
-  setTimeout(()=>go.classList.add('show'),50);
+  document.getElementById('gameOverScore').innerText="Punkte: "+score;
+  gameOver.style.display='block';
+  setTimeout(()=>{ gameOver.classList.add('show'); },50);
 }
 
 function restartGame(){
@@ -223,4 +234,3 @@ function restartGame(){
 
 </body>
 </html>
-
